@@ -9,3 +9,12 @@ Propose:
 
 Currently support 
 * uniform quantization
+
+
+## Target
+[ ] Parsing Model's modele
+[ ] Merge and convert layers
+[ ] Adding 8 bit converting 
+[ ] Adding 16 bit converting 
+[ ] Adding 8 ~ 16 bit converting 
+[ ] Seperate as  Fake quantization for training 
