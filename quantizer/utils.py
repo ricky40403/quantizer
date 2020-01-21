@@ -7,10 +7,10 @@ class Blobs(object):
     """!
     This is a blob class
     """
-    def __init__(self, name, layer_type, param, bottoms = [], tops = []):
+    def __init__(self, name, layer_type, params = None, bottoms = [], tops = []):
         self.name = name
         self.type = layer_type
-        self.param = param
+        self.params = params if params else {}
         self.weight = None
         self.bottoms = bottoms
         self.tops = tops
@@ -37,55 +37,16 @@ class Parser(object):
         self.param_len = 0
         self.layers = {}
 
-    # # @staticmethod
-    # def hook_fn(self, module, in_x, out_x):
-    #     # print("Hooking for {}".format(module.__class__.__name__))
-    #     print("Hooking for {}".format(module))
-    #     print(id(in_x))
-    #     # if id(out_x) not in self.ids:
-    #     #     self.ids.append(id(out_x))
-    #     #     self.tensors.append(in_x)
-    #     # trace = torch.jit.script(module)
-    #     # print(dir(trace))
-    #     # print(trace._parameters)
-    #     # print(trace.weight)
-    #     # trace, _ = torch.jit.get_trace_graph(module, args=(input,))
-    #     # torch.onnx._optimize_trace(trace, torch.onnx.OperatorExportTypes.ONNX)
-    #     # torch_graph = trace.graph()
-    #     # for torch_node in torch_graph.nodes():
-    #     #     print(torch_node.kind())
-
-
-    #     # self.ids.append(id(in_x))
-    #     # if id(in_x) in self.ids:
-    #     #     self.tensors.append(in_x)
-    #     # self.mapping_dict[module] = out_x
-    #     # print(in_x)
-        
-    #     print(id(out_x))
-    
-    # def pre_hook_fn(self, module, in_x):    
-    #     print("Pre : {}".format(id(in_x)))
-    #     # self.tensors.append(in_x)
-        
-    # # @staticmethod
-    # def add_hooker(self, model):        
-    #     for module_name in model._modules:            
-    #         # has children            
-    #         if len(model._modules[module_name]._modules) > 0:
-    #             self.add_hooker(model._modules[module_name])
-    #         else:
-    #             model._modules[module_name].register_forward_pre_hook(self.pre_hook_fn)
-    #             model._modules[module_name].register_forward_hook(self.hook_fn)
-
     def check_normal_tensor(self, tensor_id):
         """!
         This function check the tensor belongs to param or normal tensor
         """
         return tensor_id > self.param_len
 
-    def parse(self, model, input):                
-
+    def parse(self, model, input):             
+        """!
+        This function parse the model and build model relation ship
+        """
 
         # reference from torch.onnx's model converting        
         params = list(model.state_dict().values())        
@@ -97,15 +58,18 @@ class Parser(object):
         params_dict = dict(zip(param_names, params))
 
         # max param id for onnx
-        self.param_len = len(param_names)        
+        self.param_len = len(param_names)
         
         # construct model graph
         for torch_node in torch_graph.nodes():
             # remove onnx word
             op = torch_node.kind().replace("onnx::", "")
             params = {k: torch_node[k] for k in torch_node.attributeNames()} 
-            inputs = [i.unique() for i in torch_node.inputs()]
+            # filter out params' id
+            inputs = [i.unique() for i in torch_node.inputs() if self.check_normal_tensor(i.unique())]
+            # output id  should not contain params
             outputs = [o.unique() for o in torch_node.outputs()]
+            
             
             blob = Blobs("QQ", op, params)
             
@@ -114,7 +78,6 @@ class Parser(object):
             print(outputs)
             
 
-        # print(params_dict.keys())
 
 
         

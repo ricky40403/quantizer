@@ -18,15 +18,15 @@ class QuanModel(nn.Module):
 
         model = model.eval()
         if input is None:
-            input = torch.randn(1, 3, 600,600)       
+            input = torch.randn(1, 1, 600,600)     
 
         parser = Parser()
         parser.parse(model, input)
-            
-
-
-
-
-
         pass
-        
+    
+
+    def forward(self, x):
+        if self.training:
+            NotImplementedError
+        else:
+            pass

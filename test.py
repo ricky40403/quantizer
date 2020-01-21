@@ -1,18 +1,26 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import torch.nn.functional as F
 
 # from quantizer.utils import Parser 
 from quantizer.quantizer import QuanModel
 
 
-def hk_fn(module, input, output):
-    print("/////////////////////////")
-    print(module)
-
 def main():
+    # Set up hyper parameters
+    # dataset = Dataset((40,40,1), 7)
+    # hparams = HParams(dataset, 0.997, 1e-05)
 
-    model = models.__dict__["inception_v3"](pretrained = True)
+    # Instantiate my specific model
+    # model = MyNet(hparams)
+    # model = models.__dict__["inception_v3"](pretrained = True)
+    model = nn.Sequential(
+          nn.Conv2d(3,20,5),
+          nn.ReLU(),
+          nn.Conv2d(20,64,5),
+          nn.ReLU()
+        )
     # model = models.__dict__["resnet18"](pretrained = True)
     # input = torch.randn(1, 3, 600,600)
     # trace, out = torch.jit.get_trace_graph(model, args=(input,))
