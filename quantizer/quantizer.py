@@ -16,10 +16,11 @@ class QuanModel(nn.Module):
         Step3: quantize tensor after merging.
         """
 
+        # Step1: go through the model and log the layer.
         model = model.eval()
         if input is None:
-            input = torch.randn(1, 1, 600,600)     
-
+            input = torch.randn(1, 3, 600,600)
+            
         parser = Parser()
         parser.parse(model, input)
         pass
