@@ -1,0 +1,1 @@
+from quantizer.torch.quantize import QUAN_DICT

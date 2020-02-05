@@ -4,7 +4,7 @@ import torchvision.models as models
 import torch.nn.functional as F
 
 # from quantizer.utils import Parser 
-from quantizer.quantizer import QuanModel
+from quantizer.torch.convert import Converter
 
 
 def main():
@@ -15,13 +15,13 @@ def main():
     # Instantiate my specific model
     # model = MyNet(hparams)
     # model = models.__dict__["inception_v3"](pretrained = True)
-    model = nn.Sequential(
-          nn.Conv2d(3,20,5),
-          nn.ReLU(),
-          nn.Conv2d(20,64,5),
-          nn.ReLU()
-        )
-    # model = models.__dict__["resnet18"](pretrained = True)
+    # model = nn.Sequential(
+    #       nn.Conv2d(3,20,5),
+    #       nn.ReLU(),
+    #       nn.Conv2d(20,64,5),
+    #       nn.ReLU()
+    #     )
+    model = models.__dict__["resnet18"](pretrained = True)
     # input = torch.randn(1, 3, 600,600)
     # trace, out = torch.jit.get_trace_graph(model, args=(input,))
     # torch.onnx._optimize_trace(trace, torch.onnx.OperatorExportTypes.ONNX)
@@ -43,8 +43,9 @@ def main():
         # print("Outputs: {}".format(outputs))
 
     
-    quant_model = QuanModel()
-    quant_model.prepare(model)
+    conveter = Converter()
+    conveter.prepare(model)
+    conveter.convert()
 
     # for name, module in model.named_modules():
     #     module.register_forward_hook(hk_fn)
